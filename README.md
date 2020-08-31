@@ -2,7 +2,7 @@
 
 # info_project_chrome_ext
 
-<H1>This project is a team work</h1>
+<H3>This project is a team work</h3>
 <ul>
   <li>Abhishek Sunil Tiwari</li>
    <li>Aanya Jain</li>
