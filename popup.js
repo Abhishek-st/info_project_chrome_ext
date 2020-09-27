@@ -138,6 +138,7 @@ console.log("cond8 " + arr)
 
 
 console.log("cond9 " + arr)
+
     }).then(()=>{
     let sum = 0
     console.log(arr.length)
@@ -147,6 +148,50 @@ console.log("cond9 " + arr)
 		sum+=1
     }
     console.log(sum)
+
+    let x = document.getElementById('tb')
+    x.innerHTML += `
+    <tr>        
+        <td>If URL > 75</td>
+        <td>${arr[1]}</td>
+    </tr>
+    <tr>   
+    <td>Uses url shortening method</td>
+    <td>${arr[2]}</td>
+    </tr>
+    <tr>   
+    <td>URL has @ symbol</td>
+    <td>${arr[3]}</td>
+    </tr>
+    <tr>   
+    <td>URL has more than 2 //</td>
+    <td>${arr[4]}</td>
+    </tr>
+    <tr>   
+    <td>URL has - symbol</td>
+    <td>${arr[5]}</td>
+    </tr>
+    <tr>   
+    <td>URL has more than 4 .</td>
+    <td>${arr[6]}</td>
+    </tr>
+    <tr>   
+    <td>Is https</td>
+    <td>${arr[7]}</td>
+    </tr>
+    <tr>   
+    <td>length of web < 1 year</td>
+    <td>${arr[8]}</td>
+    </tr>
+    <tr>   
+    <td>Contains favicon</td>
+    <td>${arr[9]}</td>
+    </tr>
+    <tr>   
+    <td>Contains more than 2 https</td>
+    <td>${arr[10]}</td>
+    </tr>
+`
 	
 if(sum>=3)
 {
@@ -188,7 +233,7 @@ console.log("cond11 " + arr)
         });
 
 
-    fillTab();
+    //fillTab();
 
 let pred = 1 / (1+Math.exp(-intercept))
 
@@ -233,28 +278,32 @@ function fillTab() {
     <td>${arr[2]}</td>
     </tr>
     <tr>   
-    <td>URL has more than 2 //</td>
+    <td>URL has @ symbol</td>
     <td>${arr[3]}</td>
     </tr>
     <tr>   
-    <td>URL has more than 2 .</td>
+    <td>URL has more than 2 //</td>
     <td>${arr[4]}</td>
     </tr>
     <tr>   
-    <td>Is it http</td>
+    <td>URL has - symbol</td>
     <td>${arr[5]}</td>
     </tr>
     <tr>   
-    <td>Is https in the domain part</td>
+    <td>URL has more than 4 .</td>
     <td>${arr[6]}</td>
     </tr>
     <tr>   
-    <td>Contains @ symbol</td>
+    <td>Is https</td>
     <td>${arr[7]}</td>
     </tr>
     <tr>   
-    <td>Contains - symbol</td>
-    <td>${arr[8]}</td>
+    <td>Contains favicon</td>
+    <td>${arr[9]}</td>
+    </tr>
+    <tr>   
+    <td>Contains more than 2 https</td>
+    <td>${arr[10]}</td>
     </tr>
     `
 }
