@@ -3,9 +3,10 @@
 //         $('#greet').text('Hello ' + $('#name').val())
 //     })
 // });
-$('a').click(function() {
-    alert('You are about to go to ' + $(this).attr('href'))
-})
+
+//$('a').click(function() {
+  //  alert('You are about to go to ' + $(this).attr('href'))
+//})
 
 
 
@@ -13,6 +14,12 @@ $('a').click(function() {
 let arr = []
 let data;
 let domain;
+
+let coeff = [ 2.63218725e-01, -1.80018483e-03, -3.48969767e-01,  1.95374029e-01,
+        2.48116181e-01,  3.26308582e+00,  6.07711263e-01,  1.95768232e+00,
+       -3.11055768e-01,  2.23558460e-02, -1.06728996e-01]
+
+let intercept = 2.50796565
 
 chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
 
@@ -31,7 +38,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     domain = str[0];
     str = str[0].toString().split(":")
     ValidateIPaddress(str[0])
-    console.log(arr)
+    console.log("cond1 " + arr)
 
     console.log(tabs[0].favIconUrl);
 
@@ -40,11 +47,11 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     // condition 2 : checking length in url
     let x = url.toString().length
     if (x > 54)
-        arr.push(1)
-    else
         arr.push(0)
+    else
+        arr.push(1)
 
-    console.log(arr)
+    console.log("cond2 " + arr)
 
     // fetch(url).then(r => r.text()).then(result => {
     //     parser = new DOMParser();
@@ -66,51 +73,89 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
 
     //condition 3 : checking tiny url
     if (url.toString().includes("t.co") || url.includes("bit.ly"))
-        arr.push(1)
-    else
         arr.push(0)
+    else
+        arr.push(1)
+console.log("cond3 " + arr)
+    // condition 4 : @ symbol
 
-    // condition 4 : checking "//" more than 2
+    if (url.toString().includes("@"))
+        arr.push(0)
+    else
+        arr.push(1)
+console.log("cond4 " + arr)
+    // condition 5 : checking "//" more than 2
     let c4 = url.toString().split("//")
     if (c4.length > 2)
-        arr.push(1)
-    else
         arr.push(0)
+    else
+        arr.push(1)
+console.log("cond5 " + arr)
+        // condition 6 : - symbol
 
-    // condition 5 : checking . greater than 4
+    if (url.toString().includes("-"))
+        arr.push(0)
+    else
+        arr.push(1)
+console.log("cond6 " + arr)
+    // condition 7 : checking . greater than 4
     let c5 = url.toString().split("//")
     c5 = c5[1].split(".")
     if (c4.length > 4)
-        arr.push(1)
-    else
         arr.push(0)
-
-    // condition 6 : checking for https
+    else
+        arr.push(1)
+console.log("cond7 " + arr)
+    // condition 8 : checking for https
     let c6 = url.toString().split("//")
     if (c6[0].includes("https"))
-        arr.push(0)
-    else
-        arr.push(1)
-
-    // condition 7 : https in the domain part
-    let c7 = url.toString().split("//")
-    if (c7[1].includes("https"))
         arr.push(1)
     else
         arr.push(0)
 
-    // condition 8 : @ symbol
 
-    if (url.toString().includes("@"))
-        arr.push(1)
-    else
-        arr.push(0)
-        // condition 9 : - symbol
+console.log("cond8 " + arr)
+    fetch('https://www.whoisxmlapi.com/whoisserver/WhoisService?apiKey=at_W6RcSJvbpXymvJmyGwkTkvEODCWGQ&domainName=' + domain).then(r => r.text()).then(result => {
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(result, "text/xml");
 
-    if (url.toString().includes("-"))
-        arr.push(1)
-    else
-        arr.push(0)
+        console.log(result);
+        console.log(xmlDoc.getElementsByTagName("createdDate")[0].childNodes[0].nodeValue);
+
+	 let datecreated = xmlDoc.getElementsByTagName("createdDate")[0].childNodes[0].nodeValue;
+        lis = datecreated.split('-')
+        lis = lis[0]
+        var dt = new Date();
+        console.log(lis)
+        console.log(dt.getFullYear())
+        var diff = Math.abs(dt.getFullYear() - lis);
+        console.log(diff);
+        // condition 9
+        if (diff > 1)
+            arr.push(1)
+        else
+            arr.push(0)
+
+
+console.log("cond9 " + arr)
+    }).then(()=>{
+    let sum = 0
+    console.log(arr.length)
+    for (i = 0; i < arr.length; i++) {
+        intercept += arr[i]*coeff[i];
+	if(arr[i]==0)
+		sum+=1
+    }
+    console.log(sum)
+	
+if(sum>=3)
+{
+	console.log(sum)
+	alert("its suspious be careful while entering your details")
+}
+
+});
+
 
     // condition 10 : favicon url domain check
     let favurl = tabs[0].favIconUrl;
@@ -120,32 +165,20 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         favurl = favurl[1].toString().split("/")
         console.log(favurl[0])
         if (domain != favurl[0])
-            arr.push(1)
-        else
             arr.push(0)
+        else
+            arr.push(1)
     } else
+        arr.push(1)
+console.log("cond10 " + arr)
+    // condition11 : https in the domain part
+    let c7 = url.toString().split("//")
+    if (c7[1].includes("https"))
         arr.push(0)
+    else
+        arr.push(1)
 
-    fetch('https://www.whoisxmlapi.com/whoisserver/WhoisService?apiKey=at_W6RcSJvbpXymvJmyGwkTkvEODCWGQ&domainName=' + domain).then(r => r.text()).then(result => {
-        parser = new DOMParser();
-        xmlDoc = parser.parseFromString(result, "text/xml");
-
-        console.log(result);
-        console.log(xmlDoc.getElementsByTagName("createdDate")[0].childNodes[0].nodeValue);
-        let datecreated = xmlDoc.getElementsByTagName("createdDate")[0].childNodes[0].nodeValue;
-        lis = datecreated.split('-')
-        lis = lis[0]
-        var dt = new Date();
-        console.log(lis)
-        console.log(dt.getFullYear())
-        var diff = Math.abs(dt.getFullYear() - lis);
-        console.log(diff);
-        // condition 11
-        if (diff < 1)
-            arr.push(1)
-        else
-            arr.push(0)
-    });
+console.log("cond11 " + arr)
 
 
     chrome.extension.onRequest.addListener(
@@ -155,12 +188,9 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         });
 
 
-
-    let sum = 0
-    for (i = 0; i < arr.length; i++) {
-        sum += arr[i];
-    }
     fillTab();
+
+let pred = 1 / (1+Math.exp(-intercept))
 
     // if (sum >= 2)
     //     alert("its suspious")
@@ -173,10 +203,10 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
 function ValidateIPaddress(ipaddress) {
     if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {
         console.log("yeyes")
-        arr.push(1)
+        arr.push(0)
     } else {
         console.log("no")
-        arr.push(0)
+        arr.push(1)
     }
 
     let x = document.getElementById('tb')
@@ -232,36 +262,4 @@ function fillTab() {
 
 
 
-// chrome.webNavigation.onCompleted.addListener(onCompleted);
 
-// function onCompleted(details)
-// {
-//     if (details.frameId > 0)
-//     {
-//         // we don't care about activity occurring within a subframe of a tab
-//         return;
-//     }
-
-//     chrome.tabs.get(details.tabId, function(tab) {
-//         var url = tab.url ? tab.url.replace(/#.*$/, '') : ''; // drop #hash
-//         var favicon;
-//         var delay;
-
-//         if (tab.favIconUrl && tab.favIconUrl != '' 
-//             && tab.favIconUrl.indexOf('chrome://favicon/') == -1) {
-//             // favicon appears to be a normal url
-//             favicon = tab.favIconUrl;
-//             delay = 0;
-//         }
-//         else {
-//             // couldn't obtain favicon as a normal url, try chrome://favicon/url
-//             favicon = 'chrome://favicon/' + url;
-//             delay = 100; // larger values will probably be more reliable
-//         }
-
-//         setTimeout(function() {
-//             /// set favicon wherever it needs to be set here
-//             console.log('delay', delay, 'tabId', tab.id, 'favicon', favicon);
-//         }, delay);
-//     });
-// }

@@ -13,7 +13,9 @@
         "activeTab",
         "https://www.whoisxmlapi.com/*",
         "chrome://favicon/",
-        "<all_urls>"
+        "<all_urls>",
+        "webRequest",
+        "webRequestBlocking"
     ],
 
     "content_security_policy": "script-src 'self'; object-src 'self'; img-src chrome://favicon;",
